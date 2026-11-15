@@ -454,7 +454,7 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
         <select class="cloud-select" id="setProvider">
           <option value="supabase">Supabase 官方 · 海外免费</option>
           <option value="supabase_cn">Supabase 兼容平台 · 国内托管／自建</option>
-          <option value="rest">自定义 REST 端点 · 国内免费推荐</option>
+          <option value="rest">自定义 REST 端点 · 坚果云 / 国内免费</option>
         </select>
       </label>
       <p class="cloud-pick" id="cloudPick"></p>
@@ -1099,7 +1099,7 @@ var CLOUD_INFO = {
   },
   rest:{
     label:"同步端点 URL", ph:"https://your-worker.workers.dev", needKey:false,
-    note:'部署一个免费端点即可：Cloudflare Worker（每天 10 万请求）或国内云函数。模板见仓库 <code>assets/sync-endpoint-*.js</code> 与 README。<b>口令在服务端校验</b>，前端不放任何云厂商密钥。'
+    note:'部署一个免费端点即可：Cloudflare Worker、国内云函数，或用 <code>sync-endpoint-jianguoyun.js</code> 把数据存进<b>坚果云 WebDAV</b>（国内节点、免费、网盘里能直接看到 JSON）。坚果云本身不支持浏览器跨域直连，必须经这一层。<b>口令在服务端校验</b>，前端不放任何云厂商密钥。'
   }
 };
 function updateProviderUI(){
