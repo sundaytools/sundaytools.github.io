@@ -1,5 +1,5 @@
 /*!
- * HO 位整理表 · 自定义 REST 同步端点模板 A：Cloudflare Workers + KV
+ * HO位整理表 · 自定义 REST 同步端点模板 A：Cloudflare Workers + KV
  *
  * 免费额度（Free 计划）：Workers 每天 10 万次请求；KV 每天 10 万次读、
  * 1000 次写/删除/列表，1 GB 存储。个人用完全够，不需要信用卡。

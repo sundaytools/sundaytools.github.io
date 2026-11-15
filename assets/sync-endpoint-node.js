@@ -1,5 +1,5 @@
 /*!
- * HO 位整理表 · 自定义 REST 同步端点模板 B：通用 Node.js（零第三方依赖）
+ * HO位整理表 · 自定义 REST 同步端点模板 B：通用 Node.js（零第三方依赖）
  *
  * 用途一：本地/自建服务器直接跑
  *   node assets/sync-endpoint-node.js
@@ -103,7 +103,7 @@ const server = http.createServer(function (req, res) {
 });
 
 server.listen(PORT, function () {
-  console.log("HO 同步端点已启动: http://127.0.0.1:" + PORT);
+  console.log("HO同步端点已启动: http://127.0.0.1:" + PORT);
   console.log("数据文件: " + FILE);
 });
 

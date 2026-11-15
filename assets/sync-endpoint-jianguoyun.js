@@ -1,5 +1,5 @@
 /*!
- * HO 位整理表 · 同步端点模板 C：坚果云 WebDAV 存储（零第三方依赖，Node 18+）
+ * HO位整理表 · 同步端点模板 C：坚果云 WebDAV 存储（零第三方依赖，Node 18+）
  *
  * 为什么需要这一层：坚果云 WebDAV 不返回 CORS 头，浏览器里的静态页面
  * 无法直接 fetch（OPTIONS 预检会被拦下），而且应用密码绝不能放进前端代码。
@@ -180,7 +180,7 @@ if (require.main === module) {
   });
 
   server.listen(PORT, function () {
-    console.log("HO 同步端点（坚果云 WebDAV）已启动: http://127.0.0.1:" + PORT);
+    console.log("HO同步端点（坚果云 WebDAV）已启动: http://127.0.0.1:" + PORT);
     console.log("WebDAV 地址: " + dirUrl());
     console.log("账号已配置: " + (!!(DAV_USER && DAV_PASS)));
     if (!DAV_USER || !DAV_PASS) {
