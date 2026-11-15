@@ -1,0 +1,39 @@
+name: Deploy to GitHub Pages
+
+# 默认发布源为「Deploy from a branch -> main / (root)」，push 即生效，无需本工作流。
+# 若日后把 Pages 发布源改为 GitHub Actions，把下面 on: 改回 push 即可启用自动部署。
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Prepare static files
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          cp -r index.html favicon.svg .nojekyll assets ho-organizer dist/
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#f6f1e9" />
+<meta name="description" content="个人小工具合集：跑团 HO 位整理表等静态网页工具。" />
+<title>sundaytools 的工具集</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<style>
+:root{
+  --bg:#f6f1e9;--surface:#fffdf8;--surface-2:#faf5ed;
+  --border:#e9dfd1;--border-soft:#f1e9dd;
+  --ink:#3f342c;--ink-2:#8c7b6c;--ink-3:#b6a798;
+  --accent:#c4876a;--accent-deep:#ab6c50;--accent-soft:#f5e7dd;
+  --shadow:0 2px 14px rgba(74,55,40,.055);
+  --shadow-hover:0 10px 30px rgba(74,55,40,.12);
+  --font-title:"Noto Serif SC","Source Han Serif SC","Songti SC","STSong","SimSun",Georgia,serif;
+  --font-body:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--font-body);color:var(--ink);min-height:100vh;
+  padding:48px 20px 70px;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle at 12% 6%,rgba(255,255,255,.85) 0,rgba(255,255,255,0) 42%),
+    radial-gradient(circle at 88% 88%,rgba(226,210,190,.4) 0,rgba(226,210,190,0) 46%),
+    repeating-linear-gradient(0deg,rgba(120,95,70,.014) 0 1px,transparent 1px 4px);
+  background-attachment:fixed;
+}
+.wrap{max-width:920px;margin:0 auto}
+header{text-align:center;margin-bottom:38px}
+.brand{
+  width:46px;height:46px;margin:0 auto 14px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-size:18px;font-weight:700;
+  color:var(--accent-deep);background:var(--surface);
+  border:1.5px solid var(--border);box-shadow:var(--shadow);
+}
+h1{font-family:var(--font-title);font-size:29px;font-weight:700;letter-spacing:.16em}
+h1::after{content:"";display:block;width:46px;height:2px;margin:11px auto 0;background:var(--accent);border-radius:2px}
+.sub{margin-top:14px;font-size:12.5px;color:var(--ink-3);letter-spacing:.05em;line-height:1.9}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:16px}
+.card{
+  position:relative;display:block;text-decoration:none;color:inherit;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:18px;padding:22px 20px 20px;box-shadow:var(--shadow);
+  transition:transform .2s,box-shadow .2s,border-color .2s;
+  animation:pop .3s ease both;overflow:hidden;
+}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card::before{content:"";position:absolute;inset:0 auto 0 0;width:4px;background:var(--tone,#d9a6ae);opacity:.75}
+.card.live:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:var(--accent)}
+.card.soon{opacity:.72;cursor:default}
+.card-top{display:flex;align-items:flex-start;gap:11px;margin-bottom:12px}
+.card-mark{
+  width:38px;height:38px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-title);font-size:15px;font-weight:700;
+  color:var(--tone-deep,#9c5a68);background:var(--tone-bg,#fdf1f3);
+}
+.card h2{font-family:var(--font-title);font-size:17px;letter-spacing:.06em;font-weight:700;line-height:1.5}
+.card .tag{
+  display:inline-block;margin-top:5px;font-size:10px;letter-spacing:.06em;
+  padding:2px 8px;border-radius:20px;
+  color:var(--ink-3);background:var(--surface-2);border:1px solid var(--border-soft);
+}
+.card .tag.live-tag{color:#4f8455;background:#f1f9f1;border-color:#d8ead8}
+.card p{font-size:12.5px;line-height:1.85;color:var(--ink-2);min-height:46px}
+.card-foot{
+  margin-top:16px;padding-top:12px;border-top:1px dashed var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11.5px;color:var(--ink-3);letter-spacing:.03em;
+}
+.card-foot .arrow{color:var(--accent);font-size:14px;transition:transform .2s}
+.card.live:hover .arrow{transform:translateX(4px)}
+
+.notice{
+  margin-top:30px;padding:14px 18px;border-radius:14px;
+  background:var(--surface);border:1.5px solid var(--border);
+  font-size:12px;line-height:1.9;color:var(--ink-2);box-shadow:var(--shadow);
+}
+.notice b{color:var(--accent-deep)}
+.notice code{
+  background:var(--surface-2);border:1px solid var(--border-soft);
+  border-radius:5px;padding:1px 5px;font-size:11px;
+}
+footer{margin-top:30px;text-align:center;font-size:11px;color:var(--ink-3);line-height:2}
+@media(max-width:640px){body{padding:34px 14px 50px}h1{font-size:24px}.grid{gap:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand" aria-hidden="true">HO</div>
+    <h1>sundaytools 的工具集</h1>
+    <p class="sub">一些自己用的小网页 · 纯静态、无需登录、打开即用<br />每个工具都有独立地址，可以单独收藏和分享</p>
+  </header>
+
+  <main class="grid" id="grid"></main>
+
+  <div class="notice">
+    <b>关于这个站点</b><br />
+    这里每个入口都是仓库里的一个子目录，例如 <code>ho-organizer/</code> 对应
+    <code>sundaytools.github.io/ho-organizer/</code>。新增工具时，在下面列表里加一条、再建一个同名文件夹即可，一次 push 全部上线。<br />
+    数据默认只存在各自的浏览器里；HO 位整理表可在「设置」里开启可选的云端同步。
+  </div>
+
+  <footer>用 GitHub Pages 托管 · 数据不经过任何中间服务器</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // 新增工具：往这个数组里加一项，并在仓库里建同名目录即可
+  var TOOLS = [
+    {
+      name:"HO 位整理表",
+      mark:"HO",
+      desc:"整理跑团 HO 位：按栏目记录模组、角色与状态，可导出长图 / 宽图分享，支持备份与可选云同步。",
+      path:"ho-organizer/",
+      live:true,
+      tone:"#d9a6ae", toneBg:"#fdf1f3", toneDeep:"#9c5a68"
+    },
+    {
+      name:"更多工具",
+      mark:"+",
+      desc:"位置已留好。想到什么好玩的，建一个目录、在这里加一条记录就行。",
+      live:false,
+      tone:"#cdb49b", toneBg:"#faf4ec", toneDeep:"#83634a"
+    }
+  ];
+  var grid = document.getElementById("grid");
+  grid.innerHTML = TOOLS.map(function(t,i){
+    var tone = 'style="--tone:' + t.tone + ';--tone-bg:' + t.toneBg + ';--tone-deep:' + t.toneDeep + ';animation-delay:' + (i * 60) + 'ms"';
+    var inner =
+      '<div class="card-top">' +
+        '<div class="card-mark">' + t.mark + '</div>' +
+        '<div><h2>' + t.name + '</h2>' +
+          '<span class="tag ' + (t.live ? 'live-tag' : '') + '">' + (t.live ? "已上线" : "筹备中") + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<p>' + t.desc + '</p>' +
+      '<div class="card-foot"><span>' + (t.live ? "点击进入" : "敬请期待") + '</span>' +
+        '<span class="arrow">' + (t.live ? "→" : "·") + '</span></div>';
+    return t.live
+      ? '<a class="card live" href="' + t.path + '" ' + tone + '>' + inner + '</a>'
+      : '<div class="card soon" ' + tone + '>' + inner + '</div>';
+  }).join("");
+})();
+</script>
+</body>
+</html>
