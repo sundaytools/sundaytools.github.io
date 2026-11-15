@@ -251,8 +251,20 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
   border-radius:10px;padding:9px 10px;font-size:11px;white-space:nowrap;margin-bottom:13px;
 }
 .mini-btn:hover{border-color:var(--accent);color:var(--accent)}
+.field select.cloud-select{
+  width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:10px;
+  background:var(--bg-soft);outline:none;font-size:12.5px;color:var(--ink);font-family:inherit;
+}
+.field select.cloud-select:focus{border-color:var(--accent)}
+.cloud-pick{font-size:11px;line-height:1.75;color:var(--ink-3);margin:0 0 12px}
+.cloud-pick b{color:var(--ink-2)}
+.cloud-pick code{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:5px;padding:1px 4px;font-size:10.5px}
+.cloud-alt{margin-top:14px;padding-top:12px;border-top:1px dashed var(--border)}
+.cloud-alt .cloud-note{margin:0 0 8px}
+[hidden]{display:none !important}
 
 /* ── 弹窗 ── */
+.modal-card{max-height:88vh;overflow-y:auto}
 .modal{
   display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;
   padding:20px;background:rgba(45,34,26,.62);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
@@ -424,7 +436,7 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
   </div>
 </section>
 
-<p class="foot-note">默认即时保存在当前浏览器（localStorage），可在「设置」里开启可选的云端同步实现多设备同步。<br />无论是否开启云端，都建议定期「导出数据」备份；换设备时把 JSON 导入即可继续整理。</p>
+<p class="foot-note">默认即时保存在当前浏览器（localStorage），可在「设置」里选择云端服务实现多设备同步，或生成只读分享链接。<br />无论是否开启云端，都建议定期「导出数据」备份；换设备时把 JSON 导入即可继续整理。</p>
 
 <!-- 设置 -->
 <div class="modal" id="settingsModal">
@@ -438,9 +450,16 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
     <div class="cloud-sec">
       <h4>云同步（可选）</h4>
       <label class="checkline"><input type="checkbox" id="setCloud" /> 启用多设备云同步</label>
-      <p class="cloud-note">填写内容只保存在本浏览器，不会写进仓库，也不会出现在导出的数据里。首次使用请先在 Supabase 执行仓库根目录的 <code>supabase.sql</code>。</p>
-      <label class="field"><span>Project URL</span><input type="text" id="setUrl" placeholder="https://xxxx.supabase.co" autocomplete="off" /></label>
-      <label class="field"><span>anon public key</span><input type="text" id="setKey" placeholder="eyJhbGci..." autocomplete="off" /></label>
+      <label class="field"><span>同步服务</span>
+        <select class="cloud-select" id="setProvider">
+          <option value="supabase">Supabase 官方 · 海外免费</option>
+          <option value="supabase_cn">Supabase 兼容平台 · 国内托管／自建</option>
+          <option value="rest">自定义 REST 端点 · 国内免费推荐</option>
+        </select>
+      </label>
+      <p class="cloud-pick" id="cloudPick"></p>
+      <label class="field" id="urlField"><span id="setUrlLabel">Project URL</span><input type="text" id="setUrl" placeholder="https://xxxx.supabase.co" autocomplete="off" /></label>
+      <label class="field" id="keyField"><span>anon public key</span><input type="text" id="setKey" placeholder="eyJhbGci..." autocomplete="off" /></label>
       <div class="cloud-row">
         <label class="field"><span>空间 ID</span><input type="text" id="setSpace" placeholder="点右侧生成" autocomplete="off" /></label>
         <button class="mini-btn" id="btnGenSpace">随机生成</button>
@@ -448,6 +467,11 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
       <label class="field"><span>同步口令</span><input type="text" id="setSecret" placeholder="自己记牢，其他设备填一样的" autocomplete="off" /></label>
       <div class="cloud-status" id="cloudStatus">未启用云同步</div>
       <button class="btn tiny" id="btnSyncNow">立即同步</button>
+
+      <div class="cloud-alt">
+        <p class="cloud-note">不想用云？可以生成一个<b>只读分享链接</b>：数据压进网址里，对方打开就能导入，零账号、零费用、国内最快。内容多时链接会比较长，那种情况建议直接用「导出数据」。</p>
+        <button class="btn tiny" id="btnShareLink">生成分享链接</button>
+      </div>
     </div>
 
     <div class="modal-btns">
@@ -542,8 +566,8 @@ var board = $("board");
 
 function defaultState(){
   return {
-    version:1, title:"HO 位整理表", footer:"", showDate:true, demo:false,
-    rev:Date.now(), cloud:{ enabled:false, url:"", key:"", space:"", secret:"" },
+    version:1, title:"HO 位整理表", footer:"", showDate:true, demo:false, dirty:false,
+    rev:Date.now(), cloud:{ enabled:false, provider:"supabase", url:"", key:"", space:"", secret:"" },
     columns:[
       { name:"Ho1", colorIdx:0, entries:[] },
       { name:"Ho2", colorIdx:1, entries:[] },
@@ -573,6 +597,7 @@ function fileDate(){
 
 function save(){
   state.rev = Date.now();
+  state.dirty = true;  // 本机确实编辑过；未编辑过的新设备应无条件采用云端数据
   try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
   var h = $("saveHint");
   h.classList.add("show");
@@ -585,8 +610,10 @@ function saveLocalOnly(){
 }
 function normalizeCloud(c){
   c = c || {};
+  var p = String(c.provider || "");
+  if(["supabase","supabase_cn","rest"].indexOf(p) < 0) p = "supabase";
   return {
-    enabled: !!c.enabled,
+    enabled: !!c.enabled, provider:p,
     url: String(c.url || ""), key: String(c.key || ""),
     space: String(c.space || ""), secret: String(c.secret || "")
   };
@@ -630,6 +657,7 @@ function normalizeState(d){
   }
   s.nextColorIdx = Number.isInteger(d.nextColorIdx) ? d.nextColorIdx : s.columns.length;
   s.rev = Number.isFinite(d.rev) ? d.rev : Date.now();
+  if(d && typeof d.dirty === "boolean") s.dirty = d.dirty;
   s.demo = false;
   return s;
 }
@@ -647,7 +675,8 @@ function load(){
   state = defaultState();
   state.columns = clone(DEMO);
   state.demo = true;
-  save();
+  // 首次自动载入的示例不算「用户编辑过」，否则新设备会拿示例数据覆盖云端
+  saveLocalOnly();
 }
 
 /* ══════════ 历史 / 撤销 ══════════ */
@@ -1059,6 +1088,58 @@ function shareImage(){
 }
 
 /* ══════════ 可选云同步（本地优先 + 后台同步） ══════════ */
+var CLOUD_INFO = {
+  supabase:{
+    label:"Project URL", ph:"https://xxxx.supabase.co", needKey:true,
+    note:'免费层 500 MB 数据库、约 10 GB/月带宽，<b>7 天无活动会暂停</b>；无国内节点，写入常见 200–500 ms。首次使用先在 SQL Editor 执行仓库根目录的 <code>supabase.sql</code>。'
+  },
+  supabase_cn:{
+    label:"服务地址（Project URL）", ph:"https://xxxx.supabase.co 或自建地址", needKey:true,
+    note:'MemFire Cloud、阿里云 RDS Supabase、自建 Supabase 走同一套接口，<b>仍用 supabase.sql</b>，只换地址。国内节点延迟低，但免费层基本已取消（约 ¥20–30/月起或按云资源计费）。'
+  },
+  rest:{
+    label:"同步端点 URL", ph:"https://your-worker.workers.dev", needKey:false,
+    note:'部署一个免费端点即可：Cloudflare Worker（每天 10 万请求）或国内云函数。模板见仓库 <code>assets/sync-endpoint-*.js</code> 与 README。<b>口令在服务端校验</b>，前端不放任何云厂商密钥。'
+  }
+};
+function updateProviderUI(){
+  var sel = $("setProvider"); if(!sel) return;
+  var p = cloudCfg().provider, info = CLOUD_INFO[p] || CLOUD_INFO.supabase;
+  sel.value = p;
+  $("setUrlLabel").textContent = info.label;
+  $("setUrl").placeholder = info.ph;
+  $("keyField").hidden = !info.needKey;
+  $("cloudPick").innerHTML = info.note;
+}
+function b64encode(str){
+  return btoa(unescape(encodeURIComponent(str))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+}
+function b64decode(s){
+  s = s.replace(/-/g,"+").replace(/_/g,"/");
+  while(s.length % 4) s += "=";
+  return decodeURIComponent(escape(atob(s)));
+}
+function makeShareLink(){
+  var url = location.origin + location.pathname + "#share=" + b64encode(JSON.stringify(buildPayload()));
+  var done = function(){ toast("分享链接已复制，发给对方即可"); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(done).catch(function(){ window.prompt("复制下面的链接：", url); });
+  } else window.prompt("复制下面的链接：", url);
+  return url;
+}
+function checkShareHash(){
+  var m = /^#share=([A-Za-z0-9_-]+)$/.exec(location.hash || "");
+  if(!m) return;
+  var text;
+  try{ text = b64decode(m[1]); }catch(e){ return; }
+  try{
+    var d = JSON.parse(text);
+    if(!d || !Array.isArray(d.columns)) return;
+    if(window.confirm("检测到一份分享的 HO 位数据，要导入到本页吗？\n会覆盖当前内容，建议先导出备份。")) parseImport(text);
+    if(history.replaceState) history.replaceState(null, "", location.pathname + location.search);
+    else location.hash = "";
+  }catch(e){}
+}
 function cloudCfg(){ return normalizeCloud(state.cloud); }
 function setCloudStatus(text, kind){
   kind = kind || "";
@@ -1107,10 +1188,11 @@ function pullFromCloud(){
       var remoteRev = Number(remote.rev) || 0;
       var localRev = Number(state.rev) || 0;
       var keep = cloudCfg();
-      if(remoteRev > localRev){
+      if(remoteRev > localRev || !state.dirty){
         state = normalizeState(remote);
         state.cloud = keep;
         state.rev = remoteRev;
+        state.dirty = false;
         saveLocalOnly(); render();
         setCloudStatus("已从云端恢复最新数据", "ok");
         toast("已拉取云端最新数据");
@@ -1164,6 +1246,7 @@ function openSettings(){
   $("setKey").value = c.key;
   $("setSpace").value = c.space;
   $("setSecret").value = c.secret;
+  updateProviderUI();
   $("cloudStatus").textContent = $("cloudBadge").textContent;
   $("settingsModal").classList.add("show");
 }
@@ -1201,6 +1284,11 @@ $("setTitle").addEventListener("input", function(e){ state.title = e.target.valu
 $("setFooter").addEventListener("input", function(e){ state.footer = e.target.value; save(); });
 $("setDate").addEventListener("change", function(e){ state.showDate = e.target.checked; save(); });
 $("setCloud").addEventListener("change", function(e){ state.cloud.enabled = e.target.checked; onCloudConfigChange(); });
+$("setProvider").addEventListener("change", function(e){
+  state.cloud.provider = e.target.value;
+  updateProviderUI(); onCloudConfigChange();
+});
+$("btnShareLink").addEventListener("click", makeShareLink);
 [["setUrl","url"],["setKey","key"],["setSpace","space"],["setSecret","secret"]].forEach(function(pair){
   var el = $(pair[0]), field = pair[1];
   el.addEventListener("input", function(e){ state.cloud[field] = e.target.value; saveLocalOnly(); });
@@ -1246,6 +1334,7 @@ load();
 try{ if(!localStorage.getItem(TIP_KEY)) $("browserTip").style.display = "flex"; }catch(e){ $("browserTip").style.display = "flex"; }
 updateUndoBtn();
 render();
+checkShareHash();
 initCloud();
 })();
 </script>

@@ -5,3 +5,4 @@ Thumbs.db
 # 本地项目数据/临时文件，不上传
 .codebuddy/
 dist/
+.ho-sync-store.json
