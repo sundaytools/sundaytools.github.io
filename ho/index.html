@@ -1277,7 +1277,7 @@ function openDataModal(mode){
   modal.classList.add("show");
   if(mode === "export"){
     $("dataTitle").textContent = "导出数据";
-    $("dataHint").innerHTML = '下面是你的全部数据（含角色头像，图片较多时文件会稍大）。点<strong>「复制数据」</strong>粘贴到备忘录 / 文档里，或<strong>「下载文件」</strong>存成 .json，下次用「导入数据」还原。<br>这个 JSON 也可以直接粘进原版 HOrganizer 使用。';
+    $("dataHint").innerHTML = '下面是你的全部数据（含角色头像，图片较多时文件会稍大）。点<strong>「复制数据」</strong>粘贴到备忘录 / 文档里，或<strong>「下载文件」</strong>存成 .json，下次用「导入数据」还原。';
     ta.value = buildExport(); ta.readOnly = true; ta.placeholder = "";
     actions.innerHTML =
       '<button class="btn" data-dact="close">关闭</button>' +
