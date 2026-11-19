@@ -1,8 +1,8 @@
 # 小工具合集 · GitHub Pages 站点
 
-一个纯静态的个人工具合集：根目录是**合集首页**，每个工具一个子目录、一个独立地址，可以单独收藏和分享。当前已上线 [HO位整理表](ho-organizer/)（整理跑团 HO位／Handout 位并导出图片）。
+一个纯静态的个人工具合集：根目录是**合集首页**，每个工具一个子目录、一个独立地址，可以单独收藏和分享。当前已上线 [HO位整理表](ho/)（整理跑团 HO位／Handout 位并导出图片）。
 
-**当前线上地址**：<https://sundaytools.github.io/>（合集首页） · <https://sundaytools.github.io/ho-organizer/>（HO位整理表）
+**当前线上地址**：<https://sundaytools.github.io/>（合集首页） · <https://sundaytools.github.io/ho/>（HO位整理表）
 
 所有页面都不依赖后端、不依赖外部 CDN，资源全部用相对路径，放到子目录或换域名都不用改代码。
 
@@ -18,10 +18,11 @@
 │   ├── sync-endpoint-worker.js   REST 同步端点模板：Cloudflare Workers + KV
 │   ├── sync-endpoint-node.js     REST 同步端点模板：通用 Node.js（可本地运行）
 │   └── sync-endpoint-jianguoyun.js  REST 同步端点模板：坚果云 / 标准 WebDAV 存储
-├── ho-organizer/                 HO位整理表
+├── ho/                           HO位整理表
 │   ├── index.html
 │   ├── favicon.svg
 │   └── vendor/html2canvas.min.js
+├── ho-organizer/index.html       旧地址，自动跳转到 ho/（保留 #share 分享参数）
 ├── .github/workflows/deploy.yml  GitHub Pages 自动部署（可选）
 ├── .nojekyll
 └── README.md
@@ -33,8 +34,8 @@
 
 | 仓库名 | 首页 | HO位整理表 |
 | --- | --- | --- |
-| `<用户名>.github.io` | `https://<用户名>.github.io/` | `https://<用户名>.github.io/ho-organizer/` |
-| 其他名字（项目站点） | `https://<用户名>.github.io/<仓库名>/` | `https://<用户名>.github.io/<仓库名>/ho-organizer/` |
+| `<用户名>.github.io` | `https://<用户名>.github.io/` | `https://<用户名>.github.io/ho/` |
+| 其他名字（项目站点） | `https://<用户名>.github.io/<仓库名>/` | `https://<用户名>.github.io/<仓库名>/ho/` |
 
 推送：
 
@@ -50,7 +51,7 @@ git push -u origin main
 开启 Pages（二选一）：
 
 - **方式 A · 分支部署（最简单）**：Settings → Pages → Source 选 `Deploy from a branch` → `main` / `(root)` → Save。不需要 workflow。
-- **方式 B · Actions 自动部署**：Source 改选 `GitHub Actions`。仓库自带的 workflow 会把 `index.html`、`assets/`、`ho-organizer/` 等静态文件打包上传（不会把 `.git`、README 之类发布出去），之后每次 push 到 main 自动更新。
+- **方式 B · Actions 自动部署**：Source 改选 `GitHub Actions`。仓库自带的 workflow 会把 `index.html`、`assets/`、`ho/` 等静态文件打包上传（不会把 `.git`、README 之类发布出去），之后每次 push 到 main 自动更新。
 
 **新增一个工具**：在仓库里建同名子目录（如 `dice-roller/index.html`），再到根目录 `index.html` 的 `TOOLS` 数组里加一条记录，push 一次全部上线。
 
@@ -117,7 +118,7 @@ GitHub Pages 只发布静态文件，前端代码全网公开，所以**任何�
 1. 注册 [Supabase](https://supabase.com/)（可用 GitHub 账号登录）→ **New project**，区域建议 Singapore / Tokyo。
 2. 左侧 **SQL Editor** → New query → 把仓库根目录 `supabase.sql` 全文粘贴 → **Run**。
 3. **Project Settings → API** 复制 `Project URL` 和 `anon public` key。**不要用 `service_role` key。**
-4. 打开 `.../ho-organizer/` → **设置 → 云同步** → 同步服务选「Supabase 官方」→ 勾「启用多设备云同步」→ 填 URL 与 key → 点「随机生成」得到空间 ID → 自己设一个口令。
+4. 打开 `.../ho/` → **设置 → 云同步** → 同步服务选「Supabase 官方」→ 勾「启用多设备云同步」→ 填 URL 与 key → 点「随机生成」得到空间 ID → 自己设一个口令。
 5. 第二台设备打开同一页面，填**相同的**空间 ID 与口令即可自动同步。
 
 这些值只存在浏览器 localStorage，**不会写进仓库，也不会出现在导出的 JSON 里**。关掉开关即刻变回纯本地。
@@ -226,7 +227,7 @@ GitHub Pages 只发布静态文件，前端代码全网公开，所以**任何�
 
 ## 常见问题
 
-**页面打开但「保存为图片」没反应？** 确认 `ho-organizer/vendor/html2canvas.min.js` 已随仓库一起 push。
+**页面打开但「保存为图片」没反应？** 确认 `ho/vendor/html2canvas.min.js` 已随仓库一起 push。
 
 **手机上保存不了图片？** 用手机默认浏览器（Safari / Chrome）打开，微信、QQ 内置浏览器常拦截下载；生成后长按预览图保存，或点「下载图片」。
 
