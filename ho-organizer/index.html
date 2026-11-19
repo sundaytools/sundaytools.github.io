@@ -99,7 +99,7 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
   background:var(--surface);border:1.5px solid var(--col-border,var(--border));
   border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;
   display:flex;flex-direction:column;transition:box-shadow .2s,transform .2s,outline-color .2s;
-  animation:pop .22s ease both;
+  animation:pop .22s ease both;container-type:inline-size;
 }
 @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .col-card:hover{box-shadow:var(--shadow-hover)}
@@ -139,12 +139,12 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
 }
 .entry{
   display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--border-soft);
-  border-radius:var(--r-sm);padding:8px 6px 8px 7px;transition:border-color .15s,box-shadow .15s,opacity .15s;
+  border-radius:var(--r-sm);padding:9px 5px 9px 6px;transition:border-color .15s,box-shadow .15s,opacity .15s;
 }
 .entry:hover{border-color:var(--border)}
 .entry:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px rgba(196,135,106,.11)}
 .entry.dragging{opacity:.4}
-.entry-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.entry-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
 .row1{display:flex;align-items:center;gap:6px;min-width:0}
 .status-badge{
   flex-shrink:0;font-size:10px;font-weight:700;letter-spacing:.02em;line-height:1.5;
@@ -158,10 +158,15 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
   font-size:13px;color:var(--ink);padding:1px 0;
 }
 .fld::placeholder{color:var(--ink-3)}
-.fld.module{font-size:13px;font-weight:600}
-.fld.char,.fld.note{font-size:12px;color:var(--ink-2)}
-.row2,.row3{display:flex;align-items:center;gap:6px;padding-left:2px;min-width:0}
-.lbl{flex-shrink:0;font-size:10px;color:var(--ink-3);letter-spacing:.04em}
+.fld.module{font-size:13.5px;font-weight:600;letter-spacing:.01em}
+/* 角色 + 备注靠左成列，头像靠右，头像顶边与角色行对齐 */
+.sub-row{display:flex;align-items:flex-start;gap:8px;min-width:0}
+.sub-lines{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding-top:1px}
+.line{display:flex;align-items:center;gap:5px;min-width:0}
+.fld.char{font-size:12px;color:var(--ink)}
+.fld.note{font-size:11.5px;color:var(--ink-2)}
+.lbl{flex-shrink:0;width:24px;font-size:10px;color:var(--ink-3);letter-spacing:.04em;line-height:1.8}
+.line.is-note .lbl{opacity:.82}
 .entry-tools{
   display:flex;flex-direction:column;align-items:center;justify-content:space-between;
   gap:1px;flex-shrink:0;opacity:.28;transition:opacity .15s;
@@ -175,10 +180,11 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
   cursor:grab;user-select:none;opacity:.45;
 }
 .drag-handle:hover{opacity:1;color:var(--accent)}
-/* 角色头像：恒定 1:1 方形位，有无头像都不跳版 */
+/* 角色头像：恒定 1:1 方形位，右侧、与角色行对齐，有无头像都不跳版 */
 .avatar{
-  flex-shrink:0;width:40px;height:40px;align-self:flex-start;position:relative;
-  border-radius:10px;overflow:hidden;cursor:pointer;background:var(--surface);
+  flex-shrink:0;width:42px;height:42px;align-self:flex-start;position:relative;
+  margin-top:1px;
+  border-radius:11px;overflow:hidden;cursor:pointer;background:var(--surface);
   border:1.5px dashed var(--border);display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:1px;color:var(--ink-3);
   transition:border-color .15s,color .15s,background .15s;
@@ -202,8 +208,14 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
   opacity:0;transition:opacity .15s;
 }
 .avatar.has-img:hover .av-remove{opacity:1}
+@container (max-width:252px){
+  .avatar{width:38px;height:38px;border-radius:9px}
+  .avatar .av-plus{font-size:14px}
+  .avatar .av-txt{font-size:8px}
+  .lbl{width:22px}
+}
 @media (hover:none){.avatar .av-remove{opacity:.9}}
-@media (max-width:640px){.avatar{width:36px;height:36px}}
+@media (max-width:640px){.avatar{width:40px;height:40px}}
 .add-entry{
   margin:0 10px 10px;width:calc(100% - 20px);padding:7px;border-radius:var(--r-sm);
   border:1.5px dashed var(--border);background:none;color:var(--ink-3);font-size:12px;
@@ -337,6 +349,43 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
 #imageModal .btn:hover{background:rgba(255,255,255,.24);border-color:rgba(255,255,255,.4);color:#fff}
 #imageModal .btn.solid{background:var(--accent);border-color:var(--accent)}
 
+/* 头像裁切 */
+.crop-card{max-width:420px}
+.crop-stage{
+  position:relative;width:100%;max-width:320px;aspect-ratio:1 / 1;margin:0 auto 12px;
+  border-radius:16px;overflow:hidden;background:#ece3d5;
+  box-shadow:inset 0 0 0 1px rgba(120,90,70,.14), 0 8px 24px rgba(40,28,18,.10);
+  touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;
+}
+.crop-stage:active{cursor:grabbing}
+.crop-stage canvas{display:block;width:100%;height:100%}
+.crop-line{position:absolute;background:rgba(255,255,255,.4);pointer-events:none}
+.crop-line.v1,.crop-line.v2{top:0;bottom:0;width:1px}
+.crop-line.v1{left:33.333%}
+.crop-line.v2{left:66.666%}
+.crop-line.h1,.crop-line.h2{left:0;right:0;height:1px}
+.crop-line.h1{top:33.333%}
+.crop-line.h2{top:66.666%}
+.crop-ring{
+  position:absolute;inset:0;border-radius:16px;pointer-events:none;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.7), inset 0 0 22px rgba(60,40,25,.18);
+}
+.crop-tools{display:flex;align-items:center;gap:8px;max-width:320px;margin:0 auto 14px}
+.crop-tools input[type=range]{
+  flex:1;min-width:0;height:18px;accent-color:var(--accent);background:transparent;cursor:pointer;
+}
+.crop-step{
+  flex-shrink:0;width:27px;height:27px;border:1px solid var(--border);border-radius:9px;
+  background:var(--bg-soft);color:var(--ink-2);font-family:inherit;font-size:15px;
+  line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:border-color .15s,color .15s;
+}
+.crop-step:hover{border-color:var(--accent);color:var(--accent)}
+#cropReset{
+  flex-shrink:0;height:27px;padding:0 12px;display:inline-flex;align-items:center;
+  margin-bottom:0;border-radius:9px;font-size:11px;
+}
+
 /* 跨栏目移动菜单 */
 .move-menu{
   position:fixed;z-index:300;min-width:168px;max-width:220px;background:var(--surface);
@@ -388,12 +437,14 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
 .snap-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
 .snap-col-body{padding:9px;display:flex;flex-direction:column;gap:7px}
 .snap-entry{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:8px;padding:8px 10px}
-.snap-entry.has-av{display:flex;gap:9px;align-items:flex-start}
-.snap-entry .snap-body{flex:1;min-width:0}
-.snap-av{width:40px;height:40px;flex-shrink:0;border-radius:8px;object-fit:cover;border:1px solid var(--border-soft);display:block}
-.snap-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.snap-entry .snap-body{min-width:0}
+.snap-av{width:38px;height:38px;flex-shrink:0;border-radius:8px;object-fit:cover;border:1px solid var(--border-soft);display:block}
+.snap-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
 .snap-mod{font-size:12.5px;font-weight:600;word-break:break-word}
+.snap-sub{display:flex;align-items:flex-start;gap:8px}
+.snap-lines{flex:1;min-width:0}
 .snap-line{font-size:11px;color:var(--ink-2);line-height:1.6;word-break:break-word}
+.snap-k{display:inline-block;width:22px;font-size:10px;color:var(--ink-3)}
 .snap-line + .snap-line{margin-top:2px}
 .snap-empty{font-size:11px;color:var(--ink-3);text-align:center;padding:12px 0;font-style:italic}
 .snap-foot{text-align:center;margin-top:20px;font-family:var(--font-body);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em}
@@ -420,7 +471,7 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
 <header class="site-header">
   <div class="brand" aria-hidden="true">HO</div>
   <h1 id="pageTitle">HO位整理表</h1>
-  <p class="subtitle">拖动栏目标题可排序 · 点击状态标签切换 · 点方框上传角色头像 · 悬停条目可移动删除</p>
+  <p class="subtitle">拖动栏目标题可排序 · 点击状态标签切换 · 点右侧方框上传并裁切角色头像 · 悬停条目可移动删除</p>
   <div class="stats" id="stats"></div>
 </header>
 
@@ -468,7 +519,7 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
   </div>
 </section>
 
-<p class="foot-note">默认即时保存在当前浏览器（localStorage），可在「设置」里选择云端服务实现多设备同步，或生成只读分享链接。<br />角色头像会自动裁成 1:1 并压缩到 256×256 后存进本机与备份 JSON；只读分享链接不含头像。<br />无论是否开启云端，都建议定期「导出数据」备份；换设备时把 JSON 导入即可继续整理。</p>
+<p class="foot-note">默认即时保存在当前浏览器（localStorage），可在「设置」里选择云端服务实现多设备同步，或生成只读分享链接。<br />角色头像上传后可拖动、缩放取景，裁成 1:1 并压缩到 256×256 后存进本机与备份 JSON；只读分享链接不含头像。<br />无论是否开启云端，都建议定期「导出数据」备份；换设备时把 JSON 导入即可继续整理。</p>
 
 <!-- 设置 -->
 <div class="modal" id="settingsModal">
@@ -531,6 +582,30 @@ h1::after{content:"";display:block;width:44px;height:2px;margin:9px auto 0;backg
     <button class="btn solid" id="btnShare" style="display:none">分享</button>
     <button class="btn solid" id="btnDownload">↓ 下载图片</button>
     <button class="btn" id="btnCloseImg">✕ 关闭</button>
+  </div>
+</div>
+
+<!-- 头像裁切：拖动取景 + 缩放，输出 1:1 -->
+<div class="modal" id="cropModal">
+  <div class="modal-card crop-card" role="dialog" aria-modal="true" aria-label="裁切角色头像">
+    <h3>裁切头像</h3>
+    <p class="modal-hint">拖动图片调整取景，滚轮或双指缩放；方框内即最终头像。</p>
+    <div class="crop-stage" id="cropStage">
+      <canvas id="cropCanvas"></canvas>
+      <span class="crop-line v1"></span><span class="crop-line v2"></span>
+      <span class="crop-line h1"></span><span class="crop-line h2"></span>
+      <span class="crop-ring"></span>
+    </div>
+    <div class="crop-tools">
+      <button class="crop-step" data-act="cropzoom" data-dir="-1" title="缩小" aria-label="缩小">−</button>
+      <input type="range" id="cropRange" min="100" max="400" step="1" value="100" aria-label="缩放" />
+      <button class="crop-step" data-act="cropzoom" data-dir="1" title="放大" aria-label="放大">＋</button>
+      <button class="mini-btn" id="cropReset">重置</button>
+    </div>
+    <div class="modal-btns">
+      <button class="btn" id="btnCropCancel">取消</button>
+      <button class="btn solid" id="btnCropOk">使用这张图</button>
+    </div>
   </div>
 </div>
 
@@ -769,22 +844,26 @@ function entryHtml(en,ci,ei){
   var av = safeAvatar(en.avatar);
   return '<div class="entry" data-entry="' + ei + '">' +
     '<span class="drag-handle" draggable="true" data-drag="entry" data-ci="' + ci + '" data-ei="' + ei + '" title="拖动可移到其他栏目">⠿</span>' +
-    '<div class="avatar' + (av ? ' has-img' : '') + '" data-act="avatar" data-ci="' + ci + '" data-ei="' + ei + '" role="button" tabindex="0" aria-label="角色头像" title="' + (av ? '点击更换角色头像' : '点击上传角色头像（1:1 方形）') + '">' +
-      (av
-        ? '<img src="' + esc(av) + '" alt="角色头像" />' +
-          '<span class="av-mask">更换</span>' +
-          '<button class="av-remove" data-act="avatarremove" data-ci="' + ci + '" data-ei="' + ei + '" title="移除头像" aria-label="移除头像">✕</button>'
-        : '<span class="av-plus">＋</span><span class="av-txt">头像</span>') +
-    '</div>' +
     '<div class="entry-main">' +
       '<div class="row1">' + badge +
         '<input class="fld module" data-field="module" data-ci="' + ci + '" data-ei="' + ei + '" value="' + esc(en.module) + '" placeholder="模组名…" aria-label="模组名" ' + focus + ' />' +
       '</div>' +
-      '<div class="row2"><span class="lbl">角色</span>' +
-        '<input class="fld char" data-field="character" data-ci="' + ci + '" data-ei="' + ei + '" value="' + esc(en.character) + '" placeholder="角色名…" aria-label="角色名" ' + focus + ' />' +
-      '</div>' +
-      '<div class="row3"><span class="lbl">备注</span>' +
-        '<input class="fld note" data-field="note" data-ci="' + ci + '" data-ei="' + ei + '" value="' + esc(en.note) + '" placeholder="KP / 平台 / 时间…" aria-label="备注" ' + focus + ' />' +
+      '<div class="sub-row">' +
+        '<div class="sub-lines">' +
+          '<div class="line"><span class="lbl">角色</span>' +
+            '<input class="fld char" data-field="character" data-ci="' + ci + '" data-ei="' + ei + '" value="' + esc(en.character) + '" placeholder="角色名…" aria-label="角色名" ' + focus + ' />' +
+          '</div>' +
+          '<div class="line is-note"><span class="lbl">备注</span>' +
+            '<input class="fld note" data-field="note" data-ci="' + ci + '" data-ei="' + ei + '" value="' + esc(en.note) + '" placeholder="KP / 平台 / 时间…" aria-label="备注" ' + focus + ' />' +
+          '</div>' +
+        '</div>' +
+        '<div class="avatar' + (av ? ' has-img' : '') + '" data-act="avatar" data-ci="' + ci + '" data-ei="' + ei + '" role="button" tabindex="0" aria-label="角色头像" title="' + (av ? '点击更换角色头像' : '点击上传角色头像（可拖动裁切 1:1）') + '">' +
+          (av
+            ? '<img src="' + esc(av) + '" alt="角色头像" />' +
+              '<span class="av-mask">更换</span>' +
+              '<button class="av-remove" data-act="avatarremove" data-ci="' + ci + '" data-ei="' + ei + '" title="移除头像" aria-label="移除头像">✕</button>'
+            : '<span class="av-plus">＋</span><span class="av-txt">头像</span>') +
+        '</div>' +
       '</div>' +
     '</div>' +
     '<div class="entry-tools">' +
@@ -845,7 +924,7 @@ board.addEventListener("input", function(e){
   save();
 });
 
-/* ── 角色头像：上传、居中裁 1:1、压缩后存为 data URL ── */
+/* ── 角色头像：上传 → 可拖动缩放的 1:1 裁切器 → 压缩后存为 data URL ── */
 var avatarTarget = null;
 function pickAvatar(ci,ei){
   var en = state.columns[ci] && state.columns[ci].entries[ei];
@@ -853,17 +932,99 @@ function pickAvatar(ci,ei){
   avatarTarget = { ci:ci, ei:ei };
   var f = $("avatarFile"); f.value = ""; f.click();
 }
-function cropAvatar(img){
-  var SIZE = 256;
-  var side = Math.min(img.naturalWidth, img.naturalHeight);
-  var sx = (img.naturalWidth - side) / 2, sy = (img.naturalHeight - side) / 2;
-  var cv = document.createElement("canvas"); cv.width = SIZE; cv.height = SIZE;
+
+var CROP_OUT = 256;
+var crop = null, cropEls = null;
+var cropPointers = new Map(), cropDrag = null, cropPinch = null;
+
+function cropUI(){
+  if(!cropEls) cropEls = { stage:$("cropStage"), canvas:$("cropCanvas"), range:$("cropRange") };
+  return cropEls;
+}
+function openCropper(img, ci, ei){
+  crop = { img:img, ci:ci, ei:ei, scale:1, ox:0, oy:0, W:0, H:0, dpr:1 };
+  cropUI().range.value = 100;
+  $("cropModal").classList.add("show");
+  requestAnimationFrame(function(){ resizeCrop(); drawCrop(); });
+}
+function closeCropper(){
+  crop = null; cropDrag = null; cropPinch = null;
+  cropPointers.clear();
+  $("cropModal").classList.remove("show");
+}
+function resizeCrop(){
+  if(!crop) return;
+  var u = cropUI(), r = u.stage.getBoundingClientRect();
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  crop.W = Math.max(1, Math.round(r.width));
+  crop.H = Math.max(1, Math.round(r.height));
+  crop.dpr = dpr;
+  u.canvas.width = Math.round(crop.W * dpr);
+  u.canvas.height = Math.round(crop.H * dpr);
+  clampCrop();
+}
+/* 图片始终铺满取景框（cover），scale=1 为最小 */
+function cropGeom(){
+  var img = crop.img;
+  var cover = Math.max(crop.W / img.naturalWidth, crop.H / img.naturalHeight);
+  var k = cover * crop.scale;
+  return { k:k, dw:img.naturalWidth * k, dh:img.naturalHeight * k };
+}
+function clampCrop(){
+  var g = cropGeom();
+  var mx = Math.max(0, (g.dw - crop.W) / 2), my = Math.max(0, (g.dh - crop.H) / 2);
+  crop.ox = Math.min(mx, Math.max(-mx, crop.ox));
+  crop.oy = Math.min(my, Math.max(-my, crop.oy));
+}
+function drawCrop(){
+  if(!crop) return;
+  var g = cropGeom(), cv = cropUI().canvas, ctx = cv.getContext("2d");
+  ctx.setTransform(crop.dpr, 0, 0, crop.dpr, 0, 0);
+  ctx.clearRect(0, 0, crop.W, crop.H);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(crop.img, crop.W/2 + crop.ox - g.dw/2, crop.H/2 + crop.oy - g.dh/2, g.dw, g.dh);
+}
+function syncCropRange(){ if(crop) cropUI().range.value = Math.round(crop.scale * 100); }
+function zoomCrop(next, ax, ay){
+  if(!crop) return;
+  next = Math.max(1, Math.min(4, next));
+  if(Math.abs(next - crop.scale) < 0.0005) return;
+  var ratio = next / crop.scale;
+  if(ax === undefined){ ax = crop.W / 2; ay = crop.H / 2; }
+  var c0x = crop.W/2 + crop.ox, c0y = crop.H/2 + crop.oy;
+  crop.scale = next;
+  crop.ox = (ax - (ax - c0x) * ratio) - crop.W/2;
+  crop.oy = (ay - (ay - c0y) * ratio) - crop.H/2;
+  clampCrop(); drawCrop(); syncCropRange();
+}
+function resetCrop(){
+  if(!crop) return;
+  crop.scale = 1; crop.ox = 0; crop.oy = 0;
+  clampCrop(); drawCrop(); syncCropRange();
+}
+function commitCrop(){
+  if(!crop) return;
+  var img = crop.img, g = cropGeom(), k = g.k, W = crop.W, H = crop.H;
+  var sw = W / k, sh = H / k;
+  var sx = img.naturalWidth/2 - (W/2 + crop.ox) / k;
+  var sy = img.naturalHeight/2 - (H/2 + crop.oy) / k;
+  var cv = document.createElement("canvas");
+  cv.width = CROP_OUT; cv.height = CROP_OUT;
   var ctx = cv.getContext("2d");
-  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, SIZE, SIZE);
-  ctx.drawImage(img, sx, sy, side, side, 0, 0, SIZE, SIZE);
+  ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, CROP_OUT, CROP_OUT);
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(img, sx, sy, sw, sh, 0, 0, CROP_OUT, CROP_OUT);
   var url = cv.toDataURL("image/webp", 0.82);
-  if(url.indexOf("data:image/webp") !== 0) url = cv.toDataURL("image/jpeg", 0.82);
-  return url;
+  if(url.indexOf("data:image/webp") !== 0) url = cv.toDataURL("image/jpeg", 0.86);
+  var ci = crop.ci, ei = crop.ei;
+  closeCropper();
+  var en = state.columns[ci] && state.columns[ci].entries[ei];
+  if(!en) return;
+  var old = en.avatar;
+  pushHistory(); en.avatar = url; state.demo = false;
+  if(!save()){ en.avatar = old; render(); return; }
+  render(); toast("已添加角色头像");
 }
 function removeAvatar(ci,ei){
   var en = state.columns[ci] && state.columns[ci].entries[ei];
@@ -882,20 +1043,92 @@ $("avatarFile").addEventListener("change", function(e){
   reader.onload = function(ev){
     var img = new Image();
     img.onerror = function(){ toast("这张图片无法解析"); };
-    img.onload = function(){
-      var dataUrl;
-      try{ dataUrl = cropAvatar(img); }catch(err){ toast("图片处理失败"); return; }
-      var en = state.columns[t.ci] && state.columns[t.ci].entries[t.ei];
-      if(!en) return;
-      var old = en.avatar;
-      pushHistory(); en.avatar = dataUrl; state.demo = false;
-      if(!save()){ en.avatar = old; render(); return; }
-      render(); toast("已添加角色头像");
-    };
+    img.onload = function(){ openCropper(img, t.ci, t.ei); };
     img.src = String(ev.target.result);
   };
   reader.readAsDataURL(file);
 });
+
+/* 裁切器交互：拖动取景、滚轮 / 双指 / 滑块缩放 */
+(function bindCropper(){
+  var stage = $("cropStage");
+  stage.addEventListener("pointerdown", function(e){
+    if(!crop) return;
+    e.preventDefault();
+    try{ stage.setPointerCapture(e.pointerId); }catch(err){}
+    cropPointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if(cropPointers.size === 1){
+      cropDrag = { x:e.clientX, y:e.clientY, ox:crop.ox, oy:crop.oy };
+      cropPinch = null;
+    } else if(cropPointers.size === 2){
+      var p = Array.from(cropPointers.values());
+      cropPinch = {
+        d: Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y),
+        scale: crop.scale, ox: crop.ox, oy: crop.oy,
+        cx: (p[0].x + p[1].x) / 2, cy: (p[0].y + p[1].y) / 2, W: crop.W, H: crop.H
+      };
+      cropDrag = null;
+    }
+  });
+  stage.addEventListener("pointermove", function(e){
+    if(!crop || !cropPointers.has(e.pointerId)) return;
+    cropPointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if(cropPinch && cropPointers.size >= 2){
+      var p = Array.from(cropPointers.values());
+      var d = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+      if(cropPinch.d > 6){
+        var rect = stage.getBoundingClientRect();
+        var next = Math.max(1, Math.min(4, cropPinch.scale * (d / cropPinch.d)));
+        var k = next / cropPinch.scale;
+        var ax = cropPinch.cx - rect.left, ay = cropPinch.cy - rect.top;
+        var c0x = cropPinch.W/2 + cropPinch.ox, c0y = cropPinch.H/2 + cropPinch.oy;
+        crop.scale = next;
+        crop.ox = (ax - (ax - c0x) * k) - crop.W/2;
+        crop.oy = (ay - (ay - c0y) * k) - crop.H/2;
+        clampCrop(); drawCrop(); syncCropRange();
+      }
+      return;
+    }
+    if(cropDrag){
+      crop.ox = cropDrag.ox + (e.clientX - cropDrag.x);
+      crop.oy = cropDrag.oy + (e.clientY - cropDrag.y);
+      clampCrop(); drawCrop();
+    }
+  });
+  function endPointer(e){
+    if(!crop) return;
+    cropPointers.delete(e.pointerId);
+    if(cropPointers.size === 0){ cropDrag = null; cropPinch = null; }
+    else if(cropPointers.size === 1){
+      cropPinch = null;
+      var p = Array.from(cropPointers.values())[0];
+      cropDrag = { x:p.x, y:p.y, ox:crop.ox, oy:crop.oy };
+    }
+  }
+  stage.addEventListener("pointerup", endPointer);
+  stage.addEventListener("pointercancel", endPointer);
+  stage.addEventListener("lostpointercapture", endPointer);
+  stage.addEventListener("wheel", function(e){
+    if(!crop) return;
+    e.preventDefault();
+    var rect = stage.getBoundingClientRect();
+    zoomCrop(crop.scale * Math.pow(1.0018, -e.deltaY), e.clientX - rect.left, e.clientY - rect.top);
+  }, { passive:false });
+
+  $("btnCropOk").addEventListener("click", commitCrop);
+  $("btnCropCancel").addEventListener("click", closeCropper);
+  $("cropReset").addEventListener("click", resetCrop);
+  $("cropRange").addEventListener("input", function(e){ zoomCrop((+e.target.value) / 100); });
+  $("cropModal").addEventListener("click", function(e){
+    if(e.target === this){ closeCropper(); return; }
+    var b = e.target.closest("[data-act='cropzoom']");
+    if(b && crop){
+      var dir = +b.dataset.dir;
+      zoomCrop(crop.scale * (dir > 0 ? 1.18 : 1 / 1.18));
+    }
+  });
+  window.addEventListener("resize", function(){ if(crop){ resizeCrop(); drawCrop(); } });
+})();
 function addEntry(ci){
   pushHistory();
   var list = state.columns[ci].entries;
@@ -1133,15 +1366,20 @@ function buildSnapshot(){
     var s = palette(c.colorIdx);
     var body = c.entries.length ? c.entries.map(function(e){
       var st = statusOf(e), av = safeAvatar(e.avatar);
-      return '<div class="snap-entry' + (av ? ' has-av' : '') + '">' +
-        (av ? '<img class="snap-av" src="' + esc(av) + '" alt="" />' : "") +
+      var lines = (e.character ? '<div class="snap-line"><span class="snap-k">角色</span>' + esc(e.character) + '</div>' : "") +
+                  (e.note ? '<div class="snap-line"><span class="snap-k">备注</span>' + esc(e.note) + '</div>' : "");
+      return '<div class="snap-entry">' +
         '<div class="snap-body">' +
           '<div class="snap-row">' +
             '<span class="status-badge" style="color:' + st.color + ';background:' + st.bg + ';border-color:' + st.border + ';font-size:9px;padding:1px 6px">' + st.label + '</span>' +
             '<span class="snap-mod">' + esc(e.module || "（未命名模组）") + '</span>' +
           '</div>' +
-          (e.character ? '<div class="snap-line">角色：' + esc(e.character) + '</div>' : "") +
-          (e.note ? '<div class="snap-line">' + esc(e.note) + '</div>' : "") +
+          ((lines || av)
+            ? '<div class="snap-sub">' +
+                '<div class="snap-lines">' + lines + '</div>' +
+                (av ? '<img class="snap-av" src="' + esc(av) + '" alt="" />' : "") +
+              '</div>'
+            : "") +
         '</div>' +
       '</div>';
     }).join("") : '<div class="snap-empty">暂无条目</div>';
@@ -1444,7 +1682,7 @@ $("imageModal").addEventListener("click", function(e){ if(e.target === this) clo
 $("settingsModal").addEventListener("click", function(e){ if(e.target === this) closeSettings(); });
 $("dataModal").addEventListener("click", function(e){ if(e.target === this) closeDataModal(); });
 document.addEventListener("keydown", function(e){
-  if(e.key === "Escape"){ closeImageModal(); closeDataModal(); closeSettings(); closeMoveMenu(); }
+  if(e.key === "Escape"){ closeImageModal(); closeDataModal(); closeSettings(); closeMoveMenu(); closeCropper(); }
   var typing = /^(INPUT|TEXTAREA)$/.test(document.activeElement && document.activeElement.tagName);
   if((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z" && !typing){ e.preventDefault(); undo(); }
 });
