@@ -1256,7 +1256,7 @@ function cleanupDrag(){
 function buildPayload(opts){
   var noAvatar = !!(opts && opts.noAvatar);
   return {
-    version:1, app:"HO Organizer", rev:state.rev || Date.now(),
+    version:1, app:"HO", rev:state.rev || Date.now(),
     title:state.title, footer:state.footer, showDate:state.showDate,
     nextColorIdx:state.nextColorIdx,
     columns:state.columns.map(function(c){
